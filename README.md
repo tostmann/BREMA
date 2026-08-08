@@ -58,6 +58,10 @@ proposes; the gate disposes — nothing invented reaches a bus.
 Together the two moves change who can commission a building: the conversation at
 the top of this page is the interface.
 
+The long-form treatment — the architecture, the gated onboarding loop, worked
+examples on real radio devices, and a reproducible four-model LLM comparison —
+is the [Fachartikel](docs/brema-fachartikel.md) (German).
+
 ## The stick is its own MCP server
 
 Nothing to install, no proxy, no cloud account. The firmware answers
@@ -146,6 +150,7 @@ accessory).
 | | |
 |---|---|
 | [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it. |
+| [Der BREMA-Fachartikel](docs/brema-fachartikel.md) | The long-form article (German): architecture, the gated onboarding loop, worked examples, and a reproducible four-model LLM comparison. |
 | [Orchestrating KNX with an LLM](docs/knx-mit-brema.md) | The full HowTo (German): a real commissioning session end to end, including the failures. |
 | [install.busware.de/TUL/](https://install.busware.de/TUL/) | Web flasher — all TUL firmware options. |
 | [busware.de](https://busware.de/) | The hardware maker. |
