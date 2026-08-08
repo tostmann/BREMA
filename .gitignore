@@ -1,0 +1,16 @@
+# Never tracked, in any busware repository.
+CLAUDE.md
+MEMORY.md
+GEMINI.md
+FACTS.md
+HARDWARE_STATUS.md
+.env
+.env.*
+*.key
+*.pem
+*.log
+schematics/
+datasheets/
+datasheet/
+__pycache__/
+.claude/
