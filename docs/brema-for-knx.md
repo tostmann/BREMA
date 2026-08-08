@@ -82,9 +82,15 @@ the wrong reason.
 
 | | |
 |---|---|
-| **TUL32** | ESP32-C6 + NCN5130 KNX-TP transceiver, USB-C, optional W5500 Ethernet |
-| Network | Wi-Fi is the normal path; Ethernet is optional accessory |
+| **TUL32** | ESP32-C6 + NCN5130 KNX-TP transceiver, USB-C — [get it at the busware shop](https://shop2.busware.de/product_info.php?products_id=4) |
+| Network | Wi-Fi is the normal path; W5500 Ethernet is optional accessory |
 | Published build | ESP32-C6 only — the C3 variant compiles but its RAM headroom has not been measured |
+
+The firmware reads the board's factory type marking and starts only on a busware
+TUL. On any other ESP32-C6 board it halts with a clear message instead of
+running — the KNX pins differ per product, and an image driving foreign GPIOs on
+somebody's bus is the worse outcome. The board itself stays freely flashable
+with anything else.
 
 ---
 
