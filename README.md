@@ -12,6 +12,18 @@ sticks. This repository holds its **documentation only** — no source.
 
 ---
 
+## The name
+
+**B**usware **R**ule **E**ngine **M**odel **A**ssistant.
+
+The first three words are the machinery: device knowledge lives as rules in the
+stick's filesystem instead of compiled into a binary. The last two are the point
+of it — a **large language model authors** those rules, from structured ground
+truth rather than from guesswork, and a deterministic gate decides whether one is
+allowed to go live. The model proposes; the gate disposes: a candidate decoder is
+dry-run against captured frames before it is promoted, so nothing invented ever
+reaches a bus.
+
 ## The principle: what a device *means* is data, not firmware
 
 Every bus has the same shape of problem. A frame arrives; somewhere there is
@@ -78,6 +90,28 @@ The tools are the firmware's admin verbs; a skill resource carries the runbook.
 An agent can therefore *commission* an installation, not just switch things in
 one somebody else configured — which is the interesting part, and the part that
 needs the safety model above rather than good intentions.
+
+## Ground truth — the other half, not public yet
+
+Authoring a device decoder from an empty page invites a plausible invention, and
+a plausible invention on a bus moves the wrong blind. So the authoring loop does
+not start empty: it starts at a **ground-truth service** that holds curated
+per-device-type records — classification, capabilities, pairing procedure, codec
+facts — each carrying its **provenance**, from *verified on air* down to
+*inferred*. An agent queries it before it classifies a device it has just caught,
+and when a fact is missing, the answer is that it is missing. That is the
+difference between a generated decoder and a guessed one.
+
+It runs today for the radio backends (HomeMatic, Zigbee, EnOcean) and is **not
+openly available yet**.
+
+For **KNX** the same idea takes a different shape and is still ahead of us. The
+manufacturer's product data is the only place where a ComObject number or a
+parameter address means anything, and distilling it again in every session is
+work an index should do once. **Index functions over that catalog are planned**,
+so an agent can look a device up instead of parsing it — under the same
+provenance discipline. Until then the product file stays your input, and the
+firmware says so rather than inventing the mapping.
 
 ## Backends
 
