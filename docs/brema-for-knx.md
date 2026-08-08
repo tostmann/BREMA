@@ -82,7 +82,7 @@ the wrong reason.
 
 | | |
 |---|---|
-| **TUL32** | ESP32-C6 + NCN5130 KNX-TP transceiver, USB-C — [get it at the busware shop](https://shop2.busware.de/product_info.php?products_id=4) |
+| **TUL32** | ESP32-C6 + NCN5130 KNX-TP transceiver, USB-C — [get it at the busware shop](https://shop.busware.de/tul) |
 | Network | Wi-Fi is the normal path; a **PoE W5500 extension** is available for wired operation |
 | Published build | ESP32-C6 only — the C3 variant compiles but its RAM headroom has not been measured |
 
