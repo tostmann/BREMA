@@ -1,103 +1,103 @@
-# BREMA — commission KNX devices with an AI agent, without ETS
+# BREMA — one rule engine for KNX, Zigbee, EnOcean and HomeMatic
 
-**BREMA** is the rule engine that runs on busware's building-automation sticks.
-This repository holds its **documentation only** — no source. The firmware itself
-is installed from the browser, at
-[install.busware.de](https://install.busware.de/TUL/).
+**BREMA** is the rule engine that runs inside busware's building-automation
+sticks. This repository holds its **documentation only** — no source.
 
-A normal KNX gateway relays group telegrams: it talks to devices that somebody
-else configured with ETS. A stick running BREMA speaks the **connection-oriented
-management services ETS itself uses**. It can give a device its individual
-address, read and write its memory, drive its Load State Machines, install its
-address and association tables, and change device parameters — and then hand the
-result to Home Assistant.
-
-**No ETS. No knxd. No project file. No vendor cloud.**
+> ### → Start here: **[BREMA for KNX](docs/brema-for-knx.md)**
+>
+> Commission KNX devices with an AI agent — individual addresses, group and
+> association tables, device parameters, Home Assistant — **without ETS and
+> without knxd**. The first published incarnation, and the one you can install
+> today from the browser.
 
 ---
 
-## What you can install today
+## The principle: what a device *means* is data, not firmware
 
-| Stick | Bus | Firmware | Status |
-|---|---|---|---|
-| **TUL32** (ESP32-C6 + NCN5130) | KNX-TP | [MCP for TUL](https://install.busware.de/TUL/mcp/) | published |
-| TUL (ESP32-C3 + NCN5130) | KNX-TP | — | not released: RAM headroom unmeasured |
-| other busware sticks | Zigbee, EnOcean, HomeMatic, Modbus | — | in development, not released |
+Every bus has the same shape of problem. A frame arrives; somewhere there is
+knowledge that says these two octets are a temperature, that endpoint is
+channel 3, this button press means "off". Conventionally that knowledge is
+compiled into a gateway, which is why supporting a new device means a new
+firmware release — and why every ecosystem ends up with its own island of
+half-supported hardware.
 
-Only the C6 build is offered, and only because it is the one that has been run on
-hardware. The rest of the family shares the same engine, but an entry in a
-flasher is a promise about somebody else's device, so it waits until it is true.
+In BREMA that knowledge lives in the stick's filesystem as **device-class
+descriptions**, and the firmware is the machinery that runs them. Teaching a
+stick a new device is authoring a description and loading it — no rebuild, no
+reflash, no toolchain. The C core owns the wire, the pairing and the API; the
+device-class layer owns everything that is a matter of *interpretation*.
 
-## The stick is its own MCP server
+That split is the whole design, and it is what makes one engine serve buses as
+different as KNX-TP and 868 MHz radio.
 
-There is nothing to install on your machine. The firmware answers
-[MCP](https://modelcontextprotocol.io) over plain HTTP on your LAN:
+## Three layers
+
+```
+Rule engine       application semantics: match → extract → publish → actuate
+      ↑
+ProtocolStack     frame ↔ intent:  cemi · zcl · esp3 · asksin · modbus_rtu · …
+      ↑
+Transport         bytes + framing: tp1 · 802.15.4 · cc1101 slot · rs485 · uart
+```
+
+A **backend** is a bound pair of the two lower layers — `cemi@tp1:0`,
+`zcl@802154:0`, `esp3@uart:1` — registered at boot. One stick can carry several,
+and a device is bound to the backend it was learned on. Everything above that
+line is written once.
+
+## One core API, whichever bus is underneath
+
+- **Admin verbs with capability introspection.** A consumer asks the stick what
+  it can do and gets an answer generated from the firmware's own registry, so it
+  cannot drift from reality.
+- **Danger classes and a dry-run default.** Every verb reports whether it is
+  read-only, changes local state, changes a physical device, or changes the
+  stick's own security state. Mutating verbs default to dry run: they perform
+  every *read* and withhold only the write.
+- **Delivery verdicts, not fire-and-forget.** "Did it arrive" means something
+  different on every bus, so the answer is explicit: sent, acknowledged at link
+  level, acknowledged by the application, application error, timeout, no bus.
+  Feedback in Home Assistant is only as honest as this enum.
+- **One command-plane shape for the whole family**, so a single broker ACL
+  fences actuation across every backend at once.
+- **Home Assistant discovery is one renderer, not the model.** Devices are
+  described in protocol-neutral traits; the HA projection is an adapter over
+  them. A second consumer does not mean a second device model.
+
+## Built for agents as much as for people
+
+Each stick is its own **[MCP](https://modelcontextprotocol.io) server** over
+plain HTTP on your LAN — nothing to install on your machine, no proxy, no cloud
+account:
 
 ```
 claude mcp add --transport http busware-knx http://busware-knx-<id>.local/mcp
 ```
 
-Wi-Fi is provisioned in the browser right after flashing (Improv), in the same
-USB session — credentials are never compiled in. The stick then announces itself
-over mDNS and serves a page with its own name, addresses and the command above.
+The tools are the firmware's admin verbs; a skill resource carries the runbook.
+An agent can therefore *commission* an installation, not just switch things in
+one somebody else configured — which is the interesting part, and the part that
+needs the safety model above rather than good intentions.
 
-Any MCP client works; the endpoint is JSON-RPC 2.0 over HTTP POST. The tools are
-the firmware's own admin verbs, so they cannot drift from what the device can
-actually do.
+## Backends
 
-## What that looks like
+| Backend | Bus | Status |
+|---|---|---|
+| **KNX** | KNX-TP (TUL32: ESP32-C6 + NCN5130) | **published** — [BREMA for KNX](docs/brema-for-knx.md) |
+| Zigbee | IEEE 802.15.4 | in development, not released |
+| EnOcean | 868 MHz ESP3 | in development, not released |
+| HomeMatic | BidCoS / HmIP | in development, not released |
+| Modbus, M-Bus, DALI | RS485, wired | designed, not built |
 
-> **You** — A blind actuator is on the bus. Its product file is in `~/knxprod/`.
-> Put channel 1 into Home Assistant.
->
-> **Agent** — From the product file, channel 1 needs four group objects: move
-> up/down (DPT 1.008), stop/step (1.007), position (5.001) and the position
-> status it sends back (5.001). I'll use 1/1/1 … 1/1/4 unless you have an address
-> plan. Dry run first — I read the device and show you the writes without
-> performing them.
->
-> **You** — Addresses are fine. Go.
->
-> **Agent** — Built the address and association tables and wrote them in a load
-> session, then restarted the device. Channel 1 answers. Home Assistant now has a
-> cover tile — up, down, stop, and a position slider.
->
-> **You** — Top to bottom takes 45 seconds.
->
-> **Agent** — The product file puts that parameter at a known memory address,
-> 16 bit, in units of 100 ms. Written in a load session and the device restarted;
-> it now reports intermediate positions. I also exposed it in Home Assistant, so
-> next time you type the number there instead of asking me.
-
-This is the real sequence from the session the firmware was developed in, on a
-Merten 649802 blind actuator. The wrong turns it also contained are in the
-[HowTo](docs/knx-mit-brema.md) — they are the more instructive half.
-
-## Safety model
-
-- **Mutating verbs default to dry run.** A dry run performs every *read* and
-  withholds only the write, so its report is truthful about whether the real
-  thing would work. Reaching the bus takes an explicit `dry_run=false`.
-- **Danger classes** are reported per verb: read-only, local state, changes a
-  physical device, changes the stick's own security state.
-- **Memory writes are allow-listed, not addressed at runtime.** A wrong
-  `A_Memory_Write` does not switch the wrong light — it can leave a device
-  needing ETS to recover.
-
-## What it will not do
-
-**It does not guess product semantics.** What a ComObject number means, and where
-a parameter lives in a device's memory, is in the manufacturer's `.knxprod` — not
-in the firmware. The stick gives an agent the mechanism; the product file stays
-your input. A tool that invents a mapping here would move somebody's blinds for
-the wrong reason.
+Only what has been run on real hardware is offered for download. An entry in a
+flasher is a promise about somebody else's device.
 
 ## Documentation
 
 | | |
 |---|---|
-| [Orchestrating KNX with an LLM](docs/knx-mit-brema.md) | The full HowTo (German): the real commissioning session end to end, including the failures. |
-| [MCP for TUL](https://install.busware.de/TUL/mcp/) | What the firmware is, and what an agent gets. |
+| [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it. |
+| [Orchestrating KNX with an LLM](docs/knx-mit-brema.md) | The full HowTo (German): a real commissioning session end to end, including the failures. |
 | [install.busware.de/TUL/](https://install.busware.de/TUL/) | Web flasher — all TUL firmware options. |
 | [busware.de](https://busware.de/) | The hardware. |
 
