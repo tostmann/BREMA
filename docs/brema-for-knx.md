@@ -11,9 +11,21 @@ TUL”* from the dropdown. Description of the firmware:
 Most gateways relay group telegrams: they talk to devices somebody else
 configured with ETS. This one speaks the **connection-oriented management
 services ETS itself uses**. It can give a device its individual address, read and
-write its memory, drive its Load State Machines, install its address and
-association tables, and change device parameters — and then hand the result to
-Home Assistant.
+write its memory and properties, drive its Load State Machines, install its
+address and association tables, restart it so the change takes effect, and
+change device parameters — and then hand the result to Home Assistant.
+
+Installing a table is the dangerous part, so it is **one operation**: the load
+session, the read-back-verified chunks, the close and the restart are a single
+verb execution that nothing outside can interrupt half-way, and whose close runs
+even when a write fails. A device left mid-download resolves *no* group address
+at all until its table is loaded again, and a power cycle does not reliably get
+it out of there — which is also why the restart belongs to the sequence rather
+than to the operator's memory.
+
+It also reads an installation it did not build: a passive survey of everything
+it hears, and an active sweep that finds the devices on a line and reads back
+the identity that maps each one to its product file.
 
 **No ETS. No knxd. No project file. No vendor cloud.**
 
@@ -69,6 +81,13 @@ Merten 649802 blind actuator. The wrong turns it also contained are in the
 - **Memory writes are allow-listed, not addressed at runtime.** A wrong
   `A_Memory_Write` does not switch the wrong light — it can leave a device
   needing ETS to recover.
+- **The device is asked, not assumed.** Before writing a property, the firmware
+  can read that device's own description of it — writable or not, how wide, how
+  many elements. Mask data from the manufacturer describes a product family; on
+  the bench it marked a property writable that the device then refused, and the
+  device's own answer is the one that matched reality.
+- **A simulation does not report an outcome.** A dry run reports `would_write`
+  where a real run reports `written`.
 
 ## What it will not do
 

@@ -93,6 +93,21 @@ be talked around:
   `A_Memory_Write` does not switch the wrong light — it can leave a device
   needing ETS to recover. So no address ever travels raw: only what was
   deliberately declared is writable, within declared bounds.
+- **A table install is one operation.** Opening the load session, writing the
+  table in chunks that are each verified by read-back, closing it and
+  restarting the device is a single verb execution — nothing outside can
+  interrupt it half-way, and the close runs even when a write fails. That
+  matters because a device left mid-download is not merely unconfigured: while
+  its table is not loaded it resolves *no* group address at all, and a power
+  cycle does not reliably get it out of there.
+- **The device is asked, not assumed.** Before writing a property, the firmware
+  can read the device's own description of it — whether it is writable, how
+  wide, how many elements. A manufacturer's mask data describes a product
+  *family*: on the bench it marked a property writable that the device itself
+  refuses, and the device's answer is the one that predicted what happened.
+- **A simulation does not report an outcome.** A dry run says `would_write`
+  where a real run says `written`. A field that names a result has no business
+  appearing in a run that had none.
 
 ## How it works
 
@@ -140,6 +155,17 @@ your input, and the firmware says so rather than inventing the mapping.
 
 Only what has been run on real hardware is offered for download. An entry in a
 flasher is a promise about somebody else's device.
+
+**And run where it counts.** The KNX path is not only a bench story. The full
+ETS sequence — render the tables, install them in a load session with every
+chunk verified by read-back, restart the device, confirm it answers again — has
+been carried out on a KNX installation in daily service: a device's address
+table written back byte-identically, which is the harmless shape of the real
+thing, read back byte-for-byte, and the device confirmed afterwards to resolve
+its group addresses again. The property path was exercised the same way, on a
+value the device already held. Both are what the firmware does for a
+commissioning run, performed against equipment somebody depends on rather than
+against a simulator.
 
 **Hardware:** the [TUL KNX stick](https://shop.busware.de/tul)
 (ESP32-C6 + NCN5130, USB-C). Wi-Fi is the normal path; a **PoE W5500 extension**
