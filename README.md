@@ -25,9 +25,9 @@ different as KNX-TP and 868 MHz radio.
 
 > ### → Start here: **[BREMA for KNX](docs/brema-for-knx.md)**
 >
-> The first published incarnation. Install it from the browser at
-> [install.busware.de/TUL/](https://install.busware.de/TUL/), get the stick at
-> the [busware shop](https://shop.busware.de/tul).
+> The first published incarnation. Flash it from the browser at
+> [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/), get the
+> stick at the [busware shop](https://shop.busware.de/tul).
 
 ---
 
@@ -180,7 +180,8 @@ it without configuration when fitted.
 | [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it. |
 | [Der BREMA-Fachartikel](docs/brema-fachartikel.md) | The long-form article (German): architecture, the gated onboarding loop, worked examples, and a reproducible four-model LLM comparison. |
 | [Orchestrating KNX with an LLM](docs/knx-mit-brema.md) | The full HowTo (German): a real commissioning session end to end, including the failures. |
-| [install.busware.de/TUL/](https://install.busware.de/TUL/) | Web flasher — all TUL firmware options. |
+| [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/) | Web flasher for this firmware — reads the stick, then writes firmware and its pass together. |
+| [install.busware.de/TUL/](https://install.busware.de/TUL/) | Web flasher — the other TUL firmware options. |
 | [busware.de](https://busware.de/) | The hardware maker. |
 
 ---
