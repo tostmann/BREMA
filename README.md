@@ -28,6 +28,11 @@ different as KNX-TP and 868 MHz radio.
 > The first published incarnation. Flash it from the browser at
 > [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/), get the
 > stick at the [busware shop](https://shop.busware.de/tul).
+>
+> It runs on busware TUL hardware only: the flasher reads the stick and writes
+> the firmware together with a pass issued for that individual device, and the
+> firmware starts nothing without it. The KNX pins differ per product, so an
+> image driving the wrong ones would drive somebody's bus.
 
 ---
 
