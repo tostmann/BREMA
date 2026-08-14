@@ -103,7 +103,7 @@ the wrong reason.
 |---|---|
 | **TUL32** | ESP32-C6 + NCN5130 KNX-TP transceiver, USB-C — [get it at the busware shop](https://shop.busware.de/tul) |
 | Network | Wi-Fi is the normal path; a **PoE W5500 extension** is available for wired operation |
-| Published build | ESP32-C6 only — the C3 variant compiles but its RAM headroom has not been measured |
+| Published build | Both chips — but **take the C6**. Measured on the same firmware: 147 KB largest contiguous free block against the C3's 61 KB, and serving the skill document had to be rewritten as a stream before the C3 could deliver it at all. The C3 is also being phased out. |
 
 **Wired, where the installation is wired.** A KNX line ends in a distribution
 cabinet, and a cabinet is a poor place for Wi-Fi: coverage is an accident of

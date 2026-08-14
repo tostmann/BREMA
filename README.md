@@ -172,8 +172,9 @@ value the device already held. Both are what the firmware does for a
 commissioning run, performed against equipment somebody depends on rather than
 against a simulator.
 
-**Hardware:** the [TUL KNX stick](https://shop.busware.de/tul)
-(ESP32-C6 + NCN5130, USB-C). Wi-Fi is the normal path; a **PoE W5500 extension**
+**Hardware:** the [TUL KNX stick](https://shop.busware.de/tul) — from €39,
+ESP32-C6 + NCN5130, USB-C; the firmware is flashed from the browser, the board
+ships without it. Wi-Fi is the normal path; a **PoE W5500 extension**
 adds wired networking — power and network over the one cable that reaches the
 distribution cabinet anyway, no radio credentials in the box. The firmware uses
 it without configuration when fitted.
