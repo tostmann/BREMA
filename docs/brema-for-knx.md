@@ -1,10 +1,12 @@
-# BREMA for KNX — commission devices without ETS
+# BREMA for KNX — commission devices from an AI agent
 
 The KNX incarnation of [BREMA](../README.md), running on the **TUL32**
 (ESP32-C6 + NCN5130 TP1 transceiver). Install it from the browser at
-**[install.busware.de/TUL/](https://install.busware.de/TUL/)** — pick *“MCP for
-TUL”* from the dropdown. Description of the firmware:
-[install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/)
+**[install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/)** — that
+page both describes the firmware and flashes it. It has its own flasher because
+it needs one: the page reads the stick's chip identity and writes the firmware
+together with a pass issued for that individual device, which the shared
+installer under `/TUL/` cannot do.
 
 ## What it does that an ordinary KNX gateway does not
 
@@ -27,7 +29,8 @@ It also reads an installation it did not build: a passive survey of everything
 it hears, and an active sweep that finds the devices on a line and reads back
 the identity that maps each one to its product file.
 
-**No ETS. No knxd. No project file. No vendor cloud.**
+**No knxd. No project file. No vendor cloud.** The manufacturer's `.knxprod` is
+the one input it does need.
 
 ## After flashing
 
@@ -123,5 +126,4 @@ with anything else.
 ---
 
 [← BREMA overview](../README.md) ·
-[Web flasher](https://install.busware.de/TUL/) ·
-[Firmware page](https://install.busware.de/TUL/mcp/)
+[Firmware page and web flasher](https://install.busware.de/TUL/mcp/)
