@@ -8,10 +8,14 @@ it needs one: the page reads the stick's chip identity and writes the firmware
 together with a pass issued for that individual device, which the shared
 installer under `/TUL/` cannot do.
 
-## What it does that an ordinary KNX gateway does not
+The TUL32 is a hardware platform for your own projects and ships without
+firmware. BREMA is a free firmware you install yourself; busware provides no
+support for it.
+
+## What it does beyond relaying group telegrams
 
 Most gateways relay group telegrams: they talk to devices somebody else
-configured with ETS. This one speaks the **connection-oriented management
+configured with ETS. This firmware speaks the **connection-oriented management
 services ETS itself uses**. It can give a device its individual address, read and
 write its memory and properties, drive its Load State Machines, install its
 address and association tables, restart it so the change takes effect, and
@@ -45,6 +49,27 @@ the one input it does need.
    ```
 
 4. Optionally tell it your MQTT broker; everything else works without one.
+   Plain `mqtt://` or `ws://`, with user name and password if the broker wants
+   them; TLS is not supported.
+
+## On MQTT
+
+- Every group telegram on the line appears raw on
+  `busware/knx/rx/<main>/<middle>/<sub>` (JSON: sender, service, payload in hex),
+  with or without an assigned datapoint type.
+- A group address with an assigned DPT is also published decoded on
+  `busware/knx/state/<group address as four hex digits>/value`, retained
+  (11/0/8 → `5808`). Decoded today: DPT 1, 5 and 9.
+- Commands go to `busware/knx/cmd/<hex>/value/set` (GroupValueWrite by the
+  assigned DPT), `…/read/set` (GroupValueRead) and `…/cover/set`
+  (OPEN/CLOSE/STOP). The stick checks no permission on this path; who may
+  write there is up to the broker's ACL.
+- The prefix is fixed, and these topics carry no stick identity: several sticks
+  on one broker share them. A command is carried out by every stick that can —
+  `value` by each stick with a DPT assigned to that group address, `read` and the
+  cover's open/close by each stick on the broker. Only
+  `busware/knx/avail/<id>`, the Home-Assistant discovery topics and the admin
+  plane are per stick.
 
 ## What that looks like
 
@@ -117,11 +142,14 @@ anyway. The firmware uses it without configuration: when the module is fitted,
 the stick brings Ethernet up alongside Wi-Fi, and its own page shows the wired
 address next to the wireless one.
 
-The firmware reads the board's factory type marking and starts only on a busware
-TUL. On any other ESP32-C6 board it halts with a clear message instead of
-running — the KNX pins differ per product, and an image driving foreign GPIOs on
-somebody's bus is the worse outcome. The board itself stays freely flashable
-with anything else.
+The firmware starts only with a pass issued for that individual stick. The
+flasher page reads the chip, fetches the pass and writes it together with the
+firmware; the stick checks it locally at every boot and, without a valid one,
+halts with a clear message instead of running. The pass ties BREMA to busware
+hardware, whose sales fund its development. It also keeps an image off a board
+it was not built for: the KNX pins differ per product, and an image driving
+foreign GPIOs on somebody's bus is the worse outcome. The board itself stays
+freely flashable with anything else.
 
 ---
 

@@ -23,7 +23,7 @@ Optional, aber in dieser Sitzung entscheidend: **ein zweiter MCP-Server für HA*
 
 ## 1. Aufsetzen
 
-**Schritt 0 — Firmware.** Der Web-Flasher https://install.busware.de/TUL/ führt „MCP for TUL (KNX rule engine + MCP server)" im Dropdown (ESP32-C6; Chrome/Edge/Opera). WLAN wird direkt danach in derselben USB-Sitzung per Improv gesetzt, ohne dass Zugangsdaten in die Firmware wandern. Der Stick zeigt seine eigene Seite unter `http://busware-knx-<id>.local/` — dort stehen mDNS-Name, beide Adressen, die Hardware-Kennung und das fertige Kommando. Beschreibung der Firmware: https://install.busware.de/TUL/mcp/
+**Schritt 0 — Firmware.** Die Seite https://install.busware.de/TUL/mcp/ beschreibt die Firmware und flasht sie (ESP32-C6; Chrome/Edge/Opera). Sie liest zuerst den Chip des Sticks und schreibt die Firmware zusammen mit einem Pass, der für genau dieses Gerät ausgestellt ist; ohne ihn startet die Firmware nicht. Im gemeinsamen Web-Flasher unter https://install.busware.de/TUL/ steht sie deshalb nicht. WLAN wird direkt danach in derselben USB-Sitzung per Improv gesetzt, ohne dass Zugangsdaten in die Firmware wandern. Der Stick zeigt seine eigene Seite unter `http://busware-knx-<id>.local/` — dort stehen mDNS-Name, beide Adressen, die Hardware-Kennung und das fertige Kommando.
 
 **Der Stick ist selbst der MCP-Server, es ist nichts zu installieren:** `claude mcp add --transport http busware-knx http://busware-knx-<id>.local/mcp` — JSON-RPC 2.0 über HTTP POST, die Tools werden aus der Verb-Registry der Firmware erzeugt und können deshalb nicht auseinanderlaufen mit dem, was das Gerät wirklich kann.
 

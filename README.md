@@ -29,10 +29,16 @@ different as KNX-TP and 868 MHz radio.
 > [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/), get the
 > stick at the [busware shop](https://shop.busware.de/tul).
 >
+> The TUL is a hardware platform for your own projects and ships without
+> firmware. BREMA is a free firmware you install yourself; busware provides no
+> support for it.
+>
 > It runs on busware TUL hardware only: the flasher reads the stick and writes
 > the firmware together with a pass issued for that individual device, and the
-> firmware starts nothing without it. The KNX pins differ per product, so an
-> image driving the wrong ones would drive somebody's bus.
+> firmware starts nothing without it. The pass ties BREMA to busware hardware,
+> whose sales fund its development. It also keeps an image off a board it was
+> not built for: the KNX pins differ per product, so an image driving the wrong
+> ones would drive somebody's bus.
 
 ---
 
@@ -172,7 +178,7 @@ value the device already held. Both are what the firmware does for a
 commissioning run, performed against equipment somebody depends on rather than
 against a simulator.
 
-**Hardware:** the [TUL KNX stick](https://shop.busware.de/tul) — from €39,
+**Hardware:** the [TUL KNX stick](https://shop.busware.de/tul) —
 ESP32-C6 + NCN5130, USB-C; the firmware is flashed from the browser, the board
 ships without it. Wi-Fi is the normal path; a **PoE W5500 extension**
 adds wired networking — power and network over the one cable that reaches the
