@@ -65,9 +65,9 @@ the one input it does need.
   (OPEN/CLOSE/STOP). The stick checks no permission on this path; who may
   write there is up to the broker's ACL.
 - The prefix is fixed, and these topics carry no stick identity: several sticks
-  on one broker share them. A command is carried out by every stick that can —
-  `value` by each stick with a DPT assigned to that group address, `read` and the
-  cover's open/close by each stick on the broker. Only
+  on one broker share them. A command is carried out by each stick that has a
+  DPT assigned to that group address; before 0.25.2, `read` and the cover's
+  open/close went out from every stick on the broker. Only
   `busware/knx/avail/<id>`, the Home-Assistant discovery topics and the admin
   plane are per stick.
 
