@@ -96,6 +96,9 @@ from the release after 0.25.2*):
 - The stick takes over the service's **read-only** `prod-*` tools and forwards
   their calls — for a client on your network and through remote access alike.
   One endpoint for the agent; the service itself stays inside your network.
+- It passes on the service's own skill as well (an MCP resource,
+  `skill://knxprod-mcp/SKILL.md`), so the agent learns the `prod-*` tools from
+  the service itself, in the version that is running.
 - The page's **upload** button sends a `.knxprod` from your browser straight to
   the service.
 - The product files are the manufacturers'. You obtain them yourself and keep
