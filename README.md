@@ -189,7 +189,8 @@ it without configuration when fitted.
 
 | | |
 |---|---|
-| [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it. |
+| [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it — including [remote access](docs/brema-for-knx.md#remote-access) for claude.ai and [product data](docs/brema-for-knx.md#product-data). |
+| [knxprod-mcp](https://github.com/tostmann/knxprod-mcp) | The product-data service: MCP tools over the `.knxprod` files you supply, forwarded by the stick. |
 | [Der BREMA-Fachartikel](docs/brema-fachartikel.md) | The long-form article (German): architecture, the gated onboarding loop, worked examples, and a reproducible four-model LLM comparison. |
 | [Orchestrating KNX with an LLM](docs/knx-mit-brema.md) | The full HowTo (German): a real commissioning session end to end, including the failures. |
 | [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/) | Web flasher for this firmware — reads the stick, then writes firmware and its pass together. |

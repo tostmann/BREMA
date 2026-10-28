@@ -52,6 +52,59 @@ the one input it does need.
    Plain `mqtt://` or `ws://`, with user name and password if the broker wants
    them; TLS is not supported.
 
+## Remote access
+
+*ESP32-C6 sticks, from the firmware release after 0.25.2.* Off by default; the
+local endpoint above never needs it.
+
+Tick **Remote access (claude.ai)** on the stick's own page. The stick then dials
+out to the busware relay — no port forwarding, nothing to open in the router —
+and the page shows its connector URL, `https://mcp.bitbridge.eu/t/<id>/mcp`. In
+claude.ai: *Settings → Connectors → Add custom connector*, paste the URL.
+
+- **Approval happens on the stick's page.** Each connection attempt gets a
+  one-time code that the relay sends to the stick, valid for five minutes. You
+  read it on the stick's page and type it on the approval page — so approving
+  needs what local access needs anyway: a browser on the stick's network.
+- **The relay knows which stick it talks to.** A stick with a hardware key
+  proves its identity with it; one without is bound on first use.
+- **Same surface as on the LAN** — the same tools, skill and dry-run rules.
+  The tools that change the stick's own security state (admin token, broker
+  credentials) are refused through the relay and stay local-only.
+- Unticked, the stick closes the connection.
+
+When the stick's tool list changes — for example when product-data tools appear
+— use *Refresh tool list* on the connector in claude.ai; it keeps the list from
+the time you connected.
+
+## Product data
+
+What a ComObject number means, where a parameter lives in a device's memory and
+what its values mean is in the manufacturer's product file (`.knxprod`), not in
+the device. A separate service,
+**[knxprod-mcp](https://github.com/tostmann/knxprod-mcp)**, reads the product
+files you put into a folder and answers exactly those questions: which product
+an ApplicationId belongs to, its com objects with every variant, its parameters
+with addresses and value meanings, and what raw memory bytes decode to.
+
+The stick forwards it (section **Product data (lab)** on its page, *ESP32-C6,
+from the release after 0.25.2*):
+
+- Run the service in your network, e.g. `docker run … tostmann/knxprod-mcp` (see
+  its README). With host networking it announces itself via DNS-SD and the stick
+  **finds it by itself**; otherwise enter its URL on the stick's page.
+- The stick takes over the service's **read-only** `prod-*` tools and forwards
+  their calls — for a client on your network and through remote access alike.
+  One endpoint for the agent; the service itself stays inside your network.
+- The page's **upload** button sends a `.knxprod` from your browser straight to
+  the service.
+- The product files are the manufacturers'. You obtain them yourself and keep
+  them on your own server; the service ships no manufacturer data. Check the
+  manufacturer's terms — some restrict use to KNX-recognised tools.
+
+This is a lab feature: it works end to end on the bench, the interface may still
+change.
+
 ## On MQTT
 
 - Every group telegram on the line appears raw on
@@ -122,8 +175,9 @@ Merten 649802 blind actuator. The wrong turns it also contained are in the
 **It does not guess product semantics.** What a ComObject number means, and where
 a parameter lives in a device's memory, is in the manufacturer's `.knxprod` — not
 in the firmware. The stick gives an agent the mechanism; the product file stays
-your input. A tool that invents a mapping here would move somebody's blinds for
-the wrong reason.
+your input, looked up on request through the [product-data service](#product-data)
+when you run one. A tool that invents a mapping here would move somebody's
+blinds for the wrong reason.
 
 ## Hardware
 
