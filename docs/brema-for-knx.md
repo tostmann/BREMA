@@ -1,7 +1,8 @@
 # BREMA for KNX — commission devices from an AI agent
 
-The KNX incarnation of [BREMA](../README.md), running on the **TUL32**
-(ESP32-C6 + NCN5130 TP1 transceiver). Install it from the browser at
+The KNX incarnation of [BREMA](../README.md), published as the firmware
+**MCP4KNX**, running on the **TUL32** (ESP32-C6 + NCN5130 TP1 transceiver).
+Install it from the browser at
 **[install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/)** — that
 page both describes the firmware and flashes it. It has its own flasher because
 it needs one: the page reads the stick's chip identity and writes the firmware
@@ -40,8 +41,9 @@ the one input it does need.
 
 1. Provision Wi-Fi in the installer (Improv), in the same USB session —
    credentials are never compiled in.
-2. Open the stick's own page at `http://busware-knx-<id>.local/`: it shows its
-   mDNS name, both addresses, its hardware identity and the ready-made command.
+2. Press **Visit device** in the installer to open the stick's own page,
+   `http://busware-knx-<id>.local/`: it shows its mDNS name, both addresses, its
+   hardware identity and the ready-made command.
 3. Point your agent at it — nothing to install:
 
    ```
@@ -51,11 +53,35 @@ the one input it does need.
 4. Optionally tell it your MQTT broker; everything else works without one.
    Plain `mqtt://` or `ws://`, with user name and password if the broker wants
    them; TLS is not supported.
+5. Optionally set an [admin password](#admin-password) on the stick's page.
+
+## Admin password
+
+*Optional, since 0.26.0.* The stick works without a password, and then anyone on
+your network can use it; its page says so and offers to set one. It then answers
+only under its IP address or its `.local` name, and refuses requests from other
+web sites.
+
+Once a password is set, the stick's pages and its MCP endpoint on your network
+need it. Browsers sign in and hold a session; scripts and agents send
+`Authorization: Bearer <password>`.
+
+- **Forgotten:** plug the stick in again, open the installer over USB within 30
+  seconds and press *Visit device*. Holding the stick is the proof; the old
+  password is not needed, and wrong guesses on the network cannot lock this way
+  out.
+- **TULX (no USB for its user):** if the password is forgotten, the way back is
+  the recovery system's factory reset, which also erases the application and its
+  settings.
+
+The stick's web server speaks plain HTTP, so a password crosses your network
+unencrypted: use the stick on a network you trust. Remote access has its own
+approval and does not ask for the password.
 
 ## Remote access
 
-*ESP32-C6 sticks, from the firmware release after 0.25.2.* Off by default; the
-local endpoint above never needs it.
+*ESP32-C6 only, since 0.26.0.* Off by default; the local endpoint above never
+needs it.
 
 Tick **Remote access (claude.ai)** on the stick's own page. The stick then dials
 out to the busware relay — no port forwarding, nothing to open in the router —
@@ -88,7 +114,7 @@ an ApplicationId belongs to, its com objects with every variant, its parameters
 with addresses and value meanings, and what raw memory bytes decode to.
 
 The stick forwards it (section **Product data (lab)** on its page, *ESP32-C6,
-from the release after 0.25.2*):
+since 0.26.0*):
 
 - Run the service in your network, e.g. `docker run … tostmann/knxprod-mcp` (see
   its README). With host networking it announces itself via DNS-SD and the stick
@@ -187,6 +213,7 @@ blinds for the wrong reason.
 | | |
 |---|---|
 | **TUL32** | ESP32-C6 + NCN5130 KNX-TP transceiver, USB-C — [get it at the busware shop](https://shop.busware.de/tul) |
+| **TULX** | ESP32-C6 + NCN5130, powered by the bus, no USB for its user. Takes this firmware from its recovery system: [install.busware.de/tulx/](https://install.busware.de/tulx/) |
 | Network | Wi-Fi is the normal path; a **PoE W5500 extension** is available for wired operation |
 | Published build | Both chips — but **take the C6**. Measured on the same firmware: 147 KB largest contiguous free block against the C3's 61 KB, and serving the skill document had to be rewritten as a stream before the C3 could deliver it at all. The C3 is also being phased out. |
 

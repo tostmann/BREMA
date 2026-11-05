@@ -25,7 +25,7 @@ different as KNX-TP and 868 MHz radio.
 
 > ### → Start here: **[BREMA for KNX](docs/brema-for-knx.md)**
 >
-> The first published incarnation. Flash it from the browser at
+> The first published incarnation, the firmware **MCP4KNX**. Flash it from the browser at
 > [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/), get the
 > stick at the [busware shop](https://shop.busware.de/tul).
 >
