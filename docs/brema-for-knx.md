@@ -9,6 +9,12 @@ it needs one: the page reads the stick's chip identity and writes the firmware
 together with a pass issued for that individual device, which the shared
 installer under `/TUL/` cannot do.
 
+Two services you run in your own network complete it:
+[knxprod-mcp](#product-data) for the manufacturers' product data and
+[knxproject-mcp](#project) for the installation's record. Together they do the
+jobs you would otherwise open ETS for —
+[which ones, and where ETS is still the tool](#do-you-still-need-ets).
+
 The TUL32 is a hardware platform for your own projects and ships without
 firmware. BREMA is a free firmware you install yourself; busware provides no
 support for it.
@@ -36,6 +42,40 @@ the identity that maps each one to its product file.
 
 **No knxd. No project file. No vendor cloud.** The manufacturer's `.knxprod` is
 the one input it does need.
+
+## Do you still need ETS?
+
+In a KNX installation, ETS does four jobs: it holds the manufacturers' product
+data, keeps the project, programs the devices and helps diagnose the bus. Here
+they are spread over the firmware and two services you run yourself, and none
+of them needs ETS:
+
+| Job | Without ETS, here |
+|---|---|
+| Product data | [knxprod-mcp](#product-data) reads the `.knxprod` files you supply: which product an ApplicationId is, its com objects, its parameters with memory address and value meanings, and what raw memory bytes decode to. |
+| Individual address | The stick checks that the address is free and that exactly one device is in programming mode, writes the address, verifies it and takes the device out of programming mode. |
+| Group addresses | The address and association tables are built from the links and installed as one operation: load session, chunks verified by read-back, close, restart. |
+| Parameters | The load procedure comes from the device's product file; the parameter is written inside a load session, verified by read-back, and the device restarted. |
+| Project | [knxproject-mcp](#project) keeps the installation's record between conversations: topology, devices, group addresses, links, parameters and the owner's decisions, each with its source. |
+| Diagnostics | A passive survey of every telegram on the line, an active sweep for the devices on a line, and each device's identity, properties and memory read back. |
+
+The whole chain — address, tables, parameter, restart — is documented end to end
+on a Merten 649802 blind actuator: below under
+[What that looks like](#what-that-looks-like), and with every wrong turn in the
+[HowTo](knx-mit-brema.md) (German). A device with another load procedure is a
+new case: let the agent run it as a dry run first.
+
+Where ETS is still the tool:
+
+- **KNX Secure.** The stick does not speak it; a device that is to run secured
+  is commissioned with ETS.
+- **An ETS project to hand over.** The record cannot write a `.knxproj`, and
+  cannot read one yet. It imports ETS group-address exports (ESF), ETS3 project
+  databases, and Home Assistant and FHEM configurations.
+- **Recovery.** A device left unusable by a wrong memory write may need ETS to
+  get back.
+- **Licence terms.** Some manufacturers allow their product files in
+  KNX-recognised tools only. Check the terms before you load one.
 
 ## After flashing
 

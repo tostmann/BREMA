@@ -27,7 +27,11 @@ different as KNX-TP and 868 MHz radio.
 >
 > The first published incarnation, the firmware **MCP4KNX**. Flash it from the browser at
 > [install.busware.de/TUL/mcp/](https://install.busware.de/TUL/mcp/), get the
-> stick at the [busware shop](https://shop.busware.de/tul).
+> stick at the [busware shop](https://shop.busware.de/tul). Two services you run
+> in your own network add the manufacturers' product data
+> ([knxprod-mcp](https://github.com/tostmann/knxprod-mcp)) and the installation's
+> record ([knxproject-mcp](https://github.com/tostmann/knxproject-mcp)) —
+> [do you still need ETS?](docs/brema-for-knx.md#do-you-still-need-ets)
 >
 > The TUL is a hardware platform for your own projects and ships without
 > firmware. BREMA is a free firmware you install yourself; busware provides no
@@ -148,11 +152,15 @@ from *verified on air* down to *inferred*. When a fact is missing, the answer is
 that it is missing. It runs today for the radio backends and is **not openly
 available yet**.
 
-For **KNX** the same idea is still ahead of us: the manufacturer's `.knxprod` is
-the only place a ComObject number or a parameter address means anything, and
-distilling it fresh in every session is work an index should do once. **Index
-functions over that catalog are planned** — until then the product file stays
-your input, and the firmware says so rather than inventing the mapping.
+For **KNX** the manufacturer's `.knxprod` is the only place a ComObject number
+or a parameter address means anything, and distilling it fresh in every session
+is work an index should do once. That index is
+**[knxprod-mcp](https://github.com/tostmann/knxprod-mcp)**: it runs in your own
+network, over the product files you obtained yourself, and the stick forwards its
+tools. A shared catalogue is not offered — the files are the manufacturers', and
+some allow them in KNX-recognised tools only. Without the service, the product
+file stays your input, and the firmware says so rather than inventing the
+mapping.
 
 ## What exists today
 
@@ -189,7 +197,7 @@ it without configuration when fitted.
 
 | | |
 |---|---|
-| [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it — including [remote access](docs/brema-for-knx.md#remote-access) for claude.ai, [product data](docs/brema-for-knx.md#product-data), the [project record](docs/brema-for-knx.md#project) and [running both services](docs/brema-for-knx.md#running-the-services). |
+| [BREMA for KNX](docs/brema-for-knx.md) | What the KNX firmware does, and how to get it — including [remote access](docs/brema-for-knx.md#remote-access) for claude.ai, [product data](docs/brema-for-knx.md#product-data), the [project record](docs/brema-for-knx.md#project), [running both services](docs/brema-for-knx.md#running-the-services), and [what still needs ETS](docs/brema-for-knx.md#do-you-still-need-ets). |
 | [knxprod-mcp](https://github.com/tostmann/knxprod-mcp) | The product-data service: MCP tools over the `.knxprod` files you supply, forwarded by the stick. |
 | [knxproject-mcp](https://github.com/tostmann/knxproject-mcp) | The project service: the record of your installation between conversations, forwarded by the stick. |
 | [Der BREMA-Fachartikel](docs/brema-fachartikel.md) | The long-form article (German): architecture, the gated onboarding loop, worked examples, and a reproducible four-model LLM comparison. |
