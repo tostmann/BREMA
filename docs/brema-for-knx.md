@@ -134,6 +134,71 @@ since 0.26.0*):
 This is a lab feature: it works end to end on the bench, the interface may still
 change.
 
+## Project
+
+What an installation *is* — which device sits where, which group address does
+what, what its owner decided, what is still to do — is in no single device, and
+a chat assistant forgets it between conversations. A second service,
+**[knxproject-mcp](https://github.com/tostmann/knxproject-mcp)**, keeps that
+record: devices, group addresses, links and parameters, each with its source (an
+ETS export, the Home Assistant configuration, what the device itself holds),
+plus the notes, findings and rules of the house.
+
+The stick forwards it the way it forwards product data (section **Project
+(lab)** on its page, shown once a service is found or entered; *ESP32-C6, since
+0.26.0*):
+
+- The stick takes over the service's `proj-*` tools and passes on its skill
+  (`skill://knxproject-mcp/SKILL.md`), locally and through remote access. The
+  agent starts with `proj-brief`.
+- Unlike `prod-*`, some of these tools **write**: `proj-note` and `proj-set`
+  record notes and the owner's decisions. They change **the record only, never
+  the bus**.
+- `proj-read-device` is the one tool with bus traffic: it reads one device
+  through the stick — found by its name `busware-knx-<stick_id>.local` — and
+  records what the device holds. It only reads, and only when asked to.
+- Imports: an ETS group-address export (ESF), the `knx:` block of a Home
+  Assistant configuration, FHEM configuration files, an ETS3 project database,
+  and the replies of the stick's survey tools. **ETS5/6 project files
+  (`.knxproj`) cannot be imported yet.**
+- The service has no login. Anyone on your network can read and change the
+  record — directly, or through a stick that has no admin password. Run it on a
+  network you trust.
+
+This is a lab feature as well.
+
+## Running the services
+
+Both services run as containers on a Linux machine with Docker in your network,
+next to the stick, not on it — tested on a Raspberry Pi 5 (arm64) and on an
+x86-64 server. One Compose file starts both:
+[knx-services.compose.yml](knx-services.compose.yml).
+
+```sh
+mkdir -p knxprod knxprod-index import
+curl -fLO https://raw.githubusercontent.com/tostmann/BREMA/main/docs/knx-services.compose.yml
+cp ~/Downloads/*.knxprod knxprod/
+KNXPROD_UID=$(id -u) KNXPROD_GID=$(id -g) docker compose -f knx-services.compose.yml up -d
+```
+
+- **Host networking** lets the stick find the services by itself: they announce
+  themselves via DNS-SD (`_knxprod-mcp._tcp`, `_knxproject-mcp._tcp`), and the
+  stick looks for them on its own. Tested next to avahi-daemon and Home
+  Assistant's own mDNS on the same host.
+  mDNS stays within one network segment, so stick and host must share it — no
+  router or VLAN in between.
+- **Without host networking** (Docker Desktop, for example): publish ports 8095
+  and 8096 instead, enter `http://<host>:8095/mcp` and `http://<host>:8096/mcp`
+  on the stick's page, and give the project service the stick's URL in
+  `KNXPROJECT_STICK_URL`. The Compose file says where.
+- A firewall on the host must let the stick reach ports 8095 and 8096.
+- The record starts as the installation `home`. A stick with an admin password
+  needs it in `KNXPROJECT_STICK_TOKEN` before `proj-read-device` can read through
+  it.
+- Run one service of each kind per network. With two, the stick keeps the one it
+  uses while that one answers, and takes the first answer when it has to choose
+  — or enter the URL on its page.
+
 ## On MQTT
 
 - Every group telegram on the line appears raw on
