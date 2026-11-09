@@ -69,6 +69,10 @@ Where ETS is still the tool:
 
 - **KNX Secure.** The stick does not speak it; a device that is to run secured
   is commissioned with ETS.
+- **System B devices.** Devices with mask 07B0, OpenKNX devices among them,
+  have their tables allocated at load time and in a format of their own. The
+  stick so far writes tables only into fixed memory segments, so it cannot load
+  them yet.
 - **An ETS project to hand over.** The record cannot write a `.knxproj`, and
   cannot read one yet. It imports ETS group-address exports (ESF), ETS3 project
   databases, and Home Assistant and FHEM configurations.
